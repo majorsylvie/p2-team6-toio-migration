@@ -6,6 +6,7 @@ Keystone ks;
 CornerPinSurface surface;
 
 PGraphics offscreen;
+PImage mapImg;
 
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 range
@@ -26,7 +27,7 @@ boolean WindowsMode = true; //When you enable this, it will check for connection
 
 int framerate = 30;
 
-int[] matDimension = {45, 45, 455, 455};
+int[] matDimension = {10, 10, 455, 455};
 
 
 //for OSC
@@ -37,25 +38,38 @@ NetAddress[] server;
 //we'll keep the cubes here
 Cube[] cubes;
 
+// current dataset
+BirdData currBird;
 //void settings() {
 //  size(1000, 1000);
 //}
 
 
 void setup() {
+  BirdData kazCrane = new BirdData();
+
+  // dummy triangle data
+  kazCrane.addPoint(200, 150);
+  kazCrane.addPoint(150, 250); 
+  kazCrane.addPoint(250, 250); 
+  kazCrane.imagePath = "Kazakhstan.png";
+  kazCrane.printPoints();
+
+  // TODO dataset selection
+  currBird = kazCrane;  
   // Keystone will only work with P3D or OPENGL renderers, 
   // since it relies on texture mapping to deform
-  size(800, 800, P3D);
-
+  size(1000, 1000, P3D);
+  mapImg = loadImage(kazCrane.imagePath);
   ks = new Keystone(this);
-  surface = ks.createCornerPinSurface(475, 450, 20);
+  surface = ks.createCornerPinSurface(950, 450, 20); //Double Mat length
   
   // We need an offscreen buffer to draw the surface we
   // want projected
   // note that we're matching the resolution of the
   // CornerPinSurface.
   // (The offscreen buffer can be P2D or P3D)
-  offscreen = createGraphics(475, 450, P3D);
+  offscreen = createGraphics(950, 450, P3D);
   //launch OSC sercer
   oscP5 = new OscP5(this, 3333);
   server = new NetAddress[1];
@@ -91,6 +105,9 @@ void draw() {
   offscreen.background(255);
   offscreen.fill(0, 255, 0);
   offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
+  mapImg.resize(375, 280);
+  offscreen.image(mapImg, 20, 40);
+  
   offscreen.endDraw();
 
   // most likely, you'll want a black background to minimize
@@ -107,6 +124,7 @@ void draw() {
   //draw the "mat"
   //fill(255);
   //rect(matDimension[0] - xOffset, matDimension[1] - yOffset, matDimension[2] - matDimension[0], matDimension[3] - matDimension[1]);
+  
 
   //draw the cubes
   pushMatrix();
@@ -118,6 +136,9 @@ void draw() {
     if (cubes[i].isActive) {
       pushMatrix();
       translate(cubes[i].x, cubes[i].y);
+      if (i > 0) { //This lets us deal with two mats (determines how many tois are on mat 2)
+        translate(450, 0);
+      }
       fill(0);
       textSize(15);
       text(i, 0, -20);
@@ -131,5 +152,57 @@ void draw() {
   popMatrix();
   //END TEMPLATE/DEBUG VIEW
   
+  stroke(0);
+  line(100, 0, 20, 0);
+
   //INSERT YOUR CODE HERE!
+  drawTimeline(currBird.getNumPoints());
+}
+
+void drawTimeline(int numPoints) {
+  System.out.println("drawing timeline,,,");
+  int timelineMaxWidth = 380;
+  int timelineOffset = 20;
+  int timelineStartX = timelineOffset;
+  int timelineEndX = timelineStartX + timelineMaxWidth;
+  int timelineY = 400;
+  int tickHeight = 30; // Height of the tick marks
+  int numTicks = currBird.getNumPoints() + 1; // Number of tick marks
+  
+  // central line
+  stroke(0); // Set line color to white
+  strokeWeight(4);
+  line(timelineStartX, timelineY, timelineEndX, timelineY);
+  
+  // tick mark spacing
+  float spacing = timelineMaxWidth / (numTicks - 1);
+ 
+  for (int i = 0; i < numTicks; i++) {
+    float tickX = timelineStartX + i * spacing;
+    line(tickX, timelineY - tickHeight / 2, tickX, timelineY + tickHeight / 2);
+  }
+  // reset stroke weight from 4 
+  strokeWeight(2);
+}
+  
+void drawTick(int x, int y, String label) {
+  // Draw the tick mark
+  strokeWeight(2);
+  line(x, y - 10, x, y + 10);
+
+  // Draw the label
+  fill(200, 50, 50); // Soft red color
+  textSize(14);      // Set text size
+  textAlign(CENTER, BOTTOM); // Center the text horizontally and align it to the bottom
+
+  // Add a subtle white outline for readability
+  fill(255); // White color for the outline
+  text(label, x + 1, y - 15); // Slightly offset to create an outline effect
+  text(label, x - 1, y - 15);
+  text(label, x, y - 16);
+  text(label, x, y - 14);
+
+  // Draw the main text
+  fill(200, 50, 50); // Soft red color
+  text(label, x, y - 15);
 }
