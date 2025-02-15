@@ -22,7 +22,7 @@ int yOffset;
 // 3. When you re-run the processing code, make sure to stop the rust code and toios to be disconnected (switch to Bluetooth stand-by mode [blue LED blinking]). If toios are taking time to disconnect, you can optionally turn off the toio and turn back on using the power button.
 // Optional: If the toio behavior is werid consider dropping the framerate (e.g. change from 30 to 10)
 // 
-boolean WindowsMode = false; //When you enable this, it will check for connection with toio via Rust first, before starting void loop()
+boolean WindowsMode = true; //When you enable this, it will check for connection with toio via Rust first, before starting void loop()
 
 int framerate = 30;
 
@@ -45,17 +45,17 @@ Cube[] cubes;
 void setup() {
   // Keystone will only work with P3D or OPENGL renderers, 
   // since it relies on texture mapping to deform
-  size(800, 600, P3D);
+  size(800, 800, P3D);
 
   ks = new Keystone(this);
-  surface = ks.createCornerPinSurface(400, 300, 20);
+  surface = ks.createCornerPinSurface(475, 450, 20);
   
   // We need an offscreen buffer to draw the surface we
   // want projected
   // note that we're matching the resolution of the
   // CornerPinSurface.
   // (The offscreen buffer can be P2D or P3D)
-  offscreen = createGraphics(400, 300, P3D);
+  offscreen = createGraphics(475, 450, P3D);
   //launch OSC sercer
   oscP5 = new OscP5(this, 3333);
   server = new NetAddress[1];
@@ -73,9 +73,9 @@ void setup() {
   //do not send TOO MANY PACKETS
   //we'll be updating the cubes every frame, so don't try to go too high
   frameRate(framerate);
-  if(WindowsMode){
-  check_connection();
-  }
+  //if(WindowsMode){
+  //  check_connection();
+  //}
 }
 
 
