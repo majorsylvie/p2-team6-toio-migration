@@ -40,7 +40,7 @@ Cube[] cubes;
 // variable for the one toio cube that will move along the timeline.
 Cube timelineTOIO;
 
-// current dataset
+// currently selected bird
 BirdData currBird;
 //void settings() {
 //  size(1000, 1000);
@@ -51,13 +51,14 @@ void setup() {
   BirdData kazCrane = new BirdData();
 
   // dummy triangle data
-  kazCrane.addPoint(200, 150, "Starting Date");
-  kazCrane.addPoint(150, 250, "Middle Date");
+  kazCrane.addPoint(200, 150, "Day 1");
+  kazCrane.addPoint(150, 250, "Day 2");
   kazCrane.addPoint(250, 250);
+  kazCrane.lapEndDateLabel = "lajdfsklkajfsdh";
   kazCrane.imagePath = "Kazakhstan.png";
   kazCrane.printPoints();
 
-  // TODO dataset selection
+  // TODO bird selection
   currBird = kazCrane;
   
   // Keystone will only work with P3D or OPENGL renderers,
@@ -157,7 +158,66 @@ void draw() {
 
   //INSERT YOUR CODE HERE!
 }
+void drawTimeline() {
+  int timelineMaxWidth = 380;
+  int timelineOffset = 20;
+  int timelineStartX = timelineOffset;
+  int timelineEndX = timelineStartX + timelineMaxWidth;
+  int timelineY = 400;
+  int tickHeight = 30; // Height of the tick marks
+  int numTicks = currBird.getNumPoints() + 1; // Number of tick marks
 
+  // Draw the central timeline line
+  offscreen.stroke(0); // Set line color to black
+  offscreen.strokeWeight(4);
+  offscreen.line(timelineStartX, timelineY, timelineEndX, timelineY);
+
+  // Calculate tick mark spacing
+  float spacing = timelineMaxWidth / (numTicks - 1);
+
+  // Draw tick marks and labels
+  for (int i = 0; i < numTicks; i++) {
+    float tickX = timelineStartX + i * spacing;
+
+    // Draw the tick mark
+    offscreen.stroke(0); // Set line color to black
+    offscreen.strokeWeight(2);
+    offscreen.line(tickX, timelineY - tickHeight / 2, tickX, timelineY + tickHeight / 2);
+
+    // Draw the label (if it exists)
+    if (i < currBird.getNumPoints()) {
+      Point point = currBird.points.get(i);
+      if (!point.label.isEmpty()) { // Only draw if the label is not empty
+        drawLabel(tickX, timelineY - tickHeight / 2, point.label);
+      }
+    } else { 
+      // drawing the FINAL tick mark, 
+      // that represents the bird returning to to the first point.
+      if (!currBird.lapEndDateLabel.isEmpty()) { 
+        drawLabel(tickX, timelineY - tickHeight / 2, currBird.lapEndDateLabel);
+      }
+    }
+  }
+}
+
+void drawLabel(float x, float y, String label) {
+  // Set text properties
+  offscreen.fill(200, 50, 50); // Soft red color
+  offscreen.textSize(14);      // Set text size
+  offscreen.textAlign(CENTER, BOTTOM); // Center the text horizontally and align it to the bottom
+
+  // Add a subtle white outline for readability
+  offscreen.fill(255); // White color for the outline
+  offscreen.text(label, x + 1, y - 5); // Slightly offset to create an outline effect
+  offscreen.text(label, x - 1, y - 5);
+  offscreen.text(label, x, y - 6);
+  offscreen.text(label, x, y - 4);
+
+  // Draw the main text
+  offscreen.fill(200, 50, 50); // Soft red color
+  offscreen.text(label, x, y - 5);
+}
+/* OLDER TIMELINE THAT DIDN"T DRAW LABELS
 void drawTimeline() {
   System.out.println("drawing timeline,,,");
   int timelineMaxWidth = 380;
@@ -205,7 +265,7 @@ void drawTick(int x, int y, String label) {
   fill(200, 50, 50); // Soft red color
   text(label, x, y - 15);
 }
-
+*/
 void assignCubes() {
   System.out.println("assigning cubes");
   //create cubes

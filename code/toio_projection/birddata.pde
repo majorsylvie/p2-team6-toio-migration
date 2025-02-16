@@ -6,6 +6,7 @@ import java.util.List;
 public class BirdData {
     public List<Point> points; // List to store (x, y) coordinate points
     public String imagePath;
+    public String lapEndDateLabel; // label for the end of the timeline
     
     public BirdData() {
         points = new ArrayList<>();
