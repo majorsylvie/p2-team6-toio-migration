@@ -6,7 +6,7 @@ void keyPressed() {
     // enter/leave calibration mode, where surfaces can be warped 
     // and moved
     ks.toggleCalibration();
-    cubes[0].motor(100, 100);
+    //cubes[0].motor(100, 100);
     //cubes[1].target(int(mapTOIOTargetX), int(mapTOIOTargetY), 270);
     break;
 
