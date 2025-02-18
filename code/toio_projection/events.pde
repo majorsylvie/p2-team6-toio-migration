@@ -6,6 +6,8 @@ void keyPressed() {
     // enter/leave calibration mode, where surfaces can be warped 
     // and moved
     ks.toggleCalibration();
+    cubes[0].motor(100, 100);
+    //cubes[1].target(int(mapTOIOTargetX), int(mapTOIOTargetY), 270);
     break;
 
   case 'l':
@@ -25,7 +27,9 @@ void keyPressed() {
     //can use negative numbers to move toio backwards
     // void motor(int leftSpeed, int rightSpeed, int duration)
 
-    cubes[0].motor(115, 115, 5);
+    //cubes[0].motor(115, 115, 5);
+    //Set ALL cubes to default positions
+    cubes[0].target(85,425,90);
     break;
 
   case '2': //targeting control
@@ -36,7 +40,8 @@ void keyPressed() {
     //motor control with target specified (simplified), specification found at:
     //https://toio.github.io/toio-spec/en/docs/ble_motor#motor-control-with-target-specified
     //control, timeout, maxspeed, and speed change are preset
-    cubes[0].target(200, 200, 270);
+    //cubes[0].target(200, 200, 270);
+    cubes[1].target(mapTOIOTargetX, mapTOIOTargetY, 270);
 
     break;
 

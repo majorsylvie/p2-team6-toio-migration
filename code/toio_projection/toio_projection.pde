@@ -29,6 +29,17 @@ int framerate = 30;
 
 int[] matDimension = {10, 10, 455, 455};
 
+int timelinePrevTick = 0;
+int timelineNextTick = 1;
+int currentX;
+float leftBound;
+float rightBound;
+float percentToNext;
+
+public int mapTOIOTargetX = 45;
+public int mapTOIOTargetY = 45;
+
+
 
 //for OSC
 OscP5 oscP5;
@@ -39,6 +50,8 @@ NetAddress[] server;
 Cube[] cubes;
 // variable for the one toio cube that will move along the timeline.
 Cube timelineTOIO;
+Cube mapTOIO;
+
 
 // currently selected bird
 BirdData currBird;
@@ -53,14 +66,16 @@ void setup() {
   // dummy triangle data
   kazCrane.addPoint(200, 150, "Day 1");
   kazCrane.addPoint(150, 250, "Day 2");
-  kazCrane.addPoint(250, 250);
-  kazCrane.lapEndDateLabel = "lajdfsklkajfsdh";
+  kazCrane.addPoint(250, 250, "Day 3");
+  kazCrane.addPoint(200, 150);
+
+  kazCrane.lapEndDateLabel = "End";
   kazCrane.imagePath = "Kazakhstan.png";
   kazCrane.printPoints();
 
   // TODO bird selection
   currBird = kazCrane;
-  
+
   // Keystone will only work with P3D or OPENGL renderers,
   // since it relies on texture mapping to deform
   size(1000, 1000, P3D);
@@ -78,7 +93,7 @@ void setup() {
   oscP5 = new OscP5(this, 3333);
   server = new NetAddress[1];
   server[0] = new NetAddress("127.0.0.1", 3334);
-  
+
   assignCubes();
 
   xOffset = matDimension[0] - 45;
@@ -92,15 +107,12 @@ void setup() {
   //}
 }
 
-
-
 void draw() {
   // Convert the mouse coordinate into surface coordinates
   // this will allow you to use mouse events inside the
   // surface from your screen.
   PVector surfaceMouse = surface.getTransformedMouse();
-  
-   // most likely, you'll want a black background to minimize
+  // most likely, you'll want a black background to minimize
   // bleeding around your projection area
   background(0);
 
@@ -111,13 +123,13 @@ void draw() {
   offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   mapImg.resize(375, 280);
   offscreen.image(mapImg, 20, 40);
-  
+
   drawTimeline();
 
 
   offscreen.endDraw();
 
- 
+
   // render the scene, transformed using the corner pin surface
   surface.render(offscreen);
   ////START TEMPLATE/DEBUG VIEW
@@ -140,7 +152,7 @@ void draw() {
     if (cubes[i].isActive) {
       pushMatrix();
       translate(cubes[i].x, cubes[i].y);
-      if (i > 0) { //This lets us deal with two mats (determines how many tois are on mat 2)
+      if (i > 1) { //This lets us deal with two mats (determines how many tois are on mat 2)
         translate(450, 0);
       }
       fill(0);
@@ -159,13 +171,13 @@ void draw() {
   //INSERT YOUR CODE HERE!
 }
 void drawTimeline() {
-  int timelineMaxWidth = 380;
-  int timelineOffset = 20;
+  int timelineMaxWidth = 340;
+  int timelineOffset = 45;
   int timelineStartX = timelineOffset;
   int timelineEndX = timelineStartX + timelineMaxWidth;
-  int timelineY = 400;
+  int timelineY = 365;
   int tickHeight = 30; // Height of the tick marks
-  int numTicks = currBird.getNumPoints() + 1; // Number of tick marks
+  int numTicks = currBird.getNumPoints(); // Number of tick marks
 
   // Draw the central timeline line
   offscreen.stroke(0); // Set line color to black
@@ -174,11 +186,11 @@ void drawTimeline() {
 
   // Calculate tick mark spacing
   float spacing = timelineMaxWidth / (numTicks - 1);
-
+  ArrayList<Float> tickXs = new ArrayList<Float>();
   // Draw tick marks and labels
   for (int i = 0; i < numTicks; i++) {
     float tickX = timelineStartX + i * spacing;
-
+    tickXs.add(tickX);
     // Draw the tick mark
     offscreen.stroke(0); // Set line color to black
     offscreen.strokeWeight(2);
@@ -190,14 +202,59 @@ void drawTimeline() {
       if (!point.label.isEmpty()) { // Only draw if the label is not empty
         drawLabel(tickX, timelineY - tickHeight / 2, point.label);
       }
-    } else { 
-      // drawing the FINAL tick mark, 
+    } else {
+      // drawing the FINAL tick mark,
       // that represents the bird returning to to the first point.
-      if (!currBird.lapEndDateLabel.isEmpty()) { 
+      if (!currBird.lapEndDateLabel.isEmpty()) {
         drawLabel(tickX, timelineY - tickHeight / 2, currBird.lapEndDateLabel);
       }
     }
   }
+
+  //Here onward is for toio targeting on map
+  //Determine which tick we're moving towards
+  if (timelineTOIO.x > timelineStartX && timelineTOIO.x < timelineEndX) {
+    //System.out.println("A");
+    leftBound = tickXs.get(timelinePrevTick);
+    rightBound = tickXs.get(timelineNextTick);
+    //System.out.println("Done A");
+    if (timelineTOIO.x > rightBound) {
+      //System.out.println("B");
+      timelinePrevTick = timelineNextTick;
+      timelineNextTick = timelineNextTick + 1;
+      //System.out.println("Done B");
+    } else if (timelineTOIO.x < leftBound) {
+      //System.out.println("C");
+      timelineNextTick = timelinePrevTick;
+      timelinePrevTick = timelinePrevTick - 1;
+      //System.out.println("Done C");
+    }
+  } else if (timelineTOIO.x <= timelineStartX) {
+    timelinePrevTick = 0;
+    timelineNextTick = 1;
+    timelineTOIO.target(int(tickXs.get(0)), timelineY, 90);
+  } else if (timelineTOIO.x >= timelineEndX) {
+    timelinePrevTick = numTicks-2;
+    timelineNextTick = numTicks-1;
+    timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
+  }
+  currentX = timelineTOIO.x;
+  percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
+  //System.out.println(percentToNext);
+  //System.out.println("D");
+  int leftX = int(currBird.points.get(timelinePrevTick).x);
+  //System.out.println("E");
+  int rightX = int(currBird.points.get(timelineNextTick).x);
+  //System.out.println("F");
+  int leftY = int(currBird.points.get(timelinePrevTick).y);
+  //System.out.println("E");
+  int rightY = int(currBird.points.get(timelineNextTick).y);
+  //System.out.println("F");
+  //System.out.println(percentToNext);
+  //System.out.println(int((leftX + ((leftX - rightX)) * percentToNext)));
+  mapTOIOTargetX = int(leftX + ((leftX - rightX)) * percentToNext);
+  mapTOIOTargetY = int(leftY + ((leftY - rightY)) * percentToNext);
+  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, 90);
 }
 
 void drawLabel(float x, float y, String label) {
@@ -217,63 +274,20 @@ void drawLabel(float x, float y, String label) {
   offscreen.fill(200, 50, 50); // Soft red color
   offscreen.text(label, x, y - 5);
 }
-/* OLDER TIMELINE THAT DIDN"T DRAW LABELS
-void drawTimeline() {
-  System.out.println("drawing timeline,,,");
-  int timelineMaxWidth = 380;
-  int timelineOffset = 20;
-  int timelineStartX = timelineOffset;
-  int timelineEndX = timelineStartX + timelineMaxWidth;
-  int timelineY = 400;
-  int tickHeight = 30; // Height of the tick marks
-  int numTicks = currBird.getNumPoints() + 1; // Number of tick marks
 
-  // central line
-  stroke(0); // Set line color to white
-  strokeWeight(4);
-  offscreen.line(timelineStartX, timelineY, timelineEndX, timelineY);
-
-  // tick mark spacing
-  float spacing = timelineMaxWidth / (numTicks - 1);
-
-  for (int i = 0; i < numTicks; i++) {
-    float tickX = timelineStartX + i * spacing;
-    offscreen.line(tickX, timelineY - tickHeight / 2, tickX, timelineY + tickHeight / 2);
-  }
-  // reset stroke weight from 4
-  strokeWeight(2);
-}
-
-void drawTick(int x, int y, String label) {
-  // Draw the tick mark
-  strokeWeight(2);
-  line(x, y - 10, x, y + 10);
-
-  // Draw the label
-  fill(200, 50, 50); // Soft red color
-  textSize(14);      // Set text size
-  textAlign(CENTER, BOTTOM); // Center the text horizontally and align it to the bottom
-
-  // Add a subtle white outline for readability
-  fill(255); // White color for the outline
-  text(label, x + 1, y - 15); // Slightly offset to create an outline effect
-  text(label, x - 1, y - 15);
-  text(label, x, y - 16);
-  text(label, x, y - 14);
-
-  // Draw the main text
-  fill(200, 50, 50); // Soft red color
-  text(label, x, y - 15);
-}
-*/
 void assignCubes() {
   System.out.println("assigning cubes");
   //create cubes
   cubes = new Cube[nCubes];
   for (int i = 0; i< nCubes; ++i) {
     cubes[i] = new Cube(i);
+     System.out.println(cubes);
   }
 
   // assign toiobot purposes
   timelineTOIO = cubes[0];
+  mapTOIO = cubes[1]; //This will be dynamically changed via selection
+  //(also 1 is meant for bird selection this is just a stand in for testing)
+  System.out.println("done assigning cubes");
+  System.out.println(cubes);
 }
