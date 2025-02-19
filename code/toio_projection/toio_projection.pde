@@ -281,6 +281,7 @@ void drawTimeline() {
   }
   currentX = timelineTOIO.x;
   percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
+  print("\n\n percentToNext = " + percentToNext + "\n\n");
   //System.out.println(percentToNext);
   //System.out.println("D");
   int leftX = int(currBird.points.get(timelinePrevTick).x);
@@ -290,18 +291,20 @@ void drawTimeline() {
   int leftY = int(currBird.points.get(timelinePrevTick).y);
   //System.out.println("E");
   int rightY = int(currBird.points.get(timelineNextTick).y);
-  print("\n\n LEFTX = " + leftX + "\nRIGHTX = " + rightX + "\nLEFTY = " + leftY + "\nRIGHTY = " + rightY + "\n\n");
   //System.out.println("F");
   //System.out.println(percentToNext);
   //System.out.println(int((leftX + ((leftX - rightX)) * percentToNext)));
   mapTOIOTargetX = int(leftX + ((rightX - leftX)) * percentToNext);
   mapTOIOTargetY = int(leftY + ((rightY - leftY)) * percentToNext);
-  print("\n\nXXXXXXXX                                  ");
-  print(mapTOIOTargetX);
-  print(" ");
-  print(mapTOIOTargetY);
-  print("                                  XXXXXXXXXXXXXXXX\n\n");
-  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, 180);
+  print("\nLEFT = " + leftX +  "," + leftY + "\nRIGHT = " + rightX + "," + rightY + "\n");
+  print("\nXXXXXXXX       " + mapTOIOTargetX + " " + mapTOIOTargetY + "            XXXXXXXXXXXXXXXX\n");
+  
+  int deltaX = rightX - leftX;
+  int deltaY = rightY - leftY;
+  // calculate the angle between the two points
+  double angleRadians = Math.atan2(deltaY, deltaX);
+  int angleDegrees = (int) Math.floor(Math.toDegrees(angleRadians));
+  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, angleDegrees);
 }
 
 void drawLabel(float x, float y, String label) {
