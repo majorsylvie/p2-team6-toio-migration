@@ -80,6 +80,7 @@ void selectPuffin() {
 }
 void selectAlca() {
   BirdData alca = new BirdData();
+  //    b.addPoint(108, 220, "Home");
   addHome(alca);
   alca.addPoint(214, 174, "");
   alca.addPoint(370, 164, "");
@@ -111,7 +112,7 @@ void selectUria() {
 }
 
 void setup() {
-  selectPuffin();
+  selectUria();
 
   // Keystone will only work with P3D or OPENGL renderers,
   // since it relies on texture mapping to deform
@@ -272,11 +273,11 @@ void drawTimeline() {
   } else if (timelineTOIO.x <= timelineStartX) {
     timelinePrevTick = 0;
     timelineNextTick = 1;
-    //timelineTOIO.target(int(tickXs.get(0)), timelineY, 90);
+    timelineTOIO.target(int(tickXs.get(0)), timelineY, 90);
   } else if (timelineTOIO.x >= timelineEndX) {
     timelinePrevTick = numTicks-2;
     timelineNextTick = numTicks-1;
-    //timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
+    timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
   }
   currentX = timelineTOIO.x;
   percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
@@ -289,12 +290,18 @@ void drawTimeline() {
   int leftY = int(currBird.points.get(timelinePrevTick).y);
   //System.out.println("E");
   int rightY = int(currBird.points.get(timelineNextTick).y);
+  print("\n\n LEFTX = " + leftX + "\nRIGHTX = " + rightX + "\nLEFTY = " + leftY + "\nRIGHTY = " + rightY + "\n\n");
   //System.out.println("F");
   //System.out.println(percentToNext);
   //System.out.println(int((leftX + ((leftX - rightX)) * percentToNext)));
-  mapTOIOTargetX = int(leftX + ((leftX - rightX)) * percentToNext);
-  mapTOIOTargetY = int(leftY + ((leftY - rightY)) * percentToNext);
-  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, 90);
+  mapTOIOTargetX = int(leftX + ((rightX - leftX)) * percentToNext);
+  mapTOIOTargetY = int(leftY + ((rightY - leftY)) * percentToNext);
+  print("\n\nXXXXXXXX                                  ");
+  print(mapTOIOTargetX);
+  print(" ");
+  print(mapTOIOTargetY);
+  print("                                  XXXXXXXXXXXXXXXX\n\n");
+  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, 180);
 }
 
 void drawLabel(float x, float y, String label) {
