@@ -26,6 +26,8 @@ int yOffset;
 //
 boolean WindowsMode = false; //When you enable this, it will check for connection with toio via Rust first, before starting void loop()
 
+boolean isPlaying = false; 
+
 int framerate = 30;
 
 int[] matDimension = {10, 10, 455, 455};
@@ -174,6 +176,7 @@ void draw() {
   drawTimeline();
   drawInfo();
   drawIcons();
+  drawPlayPauseButton();
 
   offscreen.endDraw();
 
@@ -443,3 +446,24 @@ void drawIcons() {
   offscreen.image(UriaIcon, iconStartX-(iconMaxWidth/2),iconY + (180 + iconSpacing));
   
 }
+
+void drawPlayPauseButton() {
+  int buttonMaxWidth = 85; 
+  int buttonHeight = 40; 
+  int buttonX = 470; 
+  int buttonY = 50 + 180 + 85 + 30 + 40; 
+
+  offscreen.fill(200);
+  offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
+
+  offscreen.fill(0);
+  offscreen.textSize(20);
+  offscreen.textAlign(CENTER, CENTER);
+
+  if (isPlaying) {
+    offscreen.text("Pause", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
+  } else {
+    offscreen.text("Play", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
+  }
+}
+
