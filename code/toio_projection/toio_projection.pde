@@ -617,6 +617,7 @@ void drawPlayPauseButton() {
   int buttonY = 50 + 180 + 85;
 
   // ADD PLAYPAUSE TOGGLE
+  offscreen.fill(50,105,255);
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
 
   offscreen.fill(0);
@@ -624,9 +625,11 @@ void drawPlayPauseButton() {
   offscreen.textAlign(CENTER, CENTER);
 
   if (!paused) {
+    offscreen.fill(0,0,0);
     offscreen.text("Pause", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
     pauseplayTOIO.led(100,0,255,0);
   } else {
+    offscreen.fill(0,0,0);
     offscreen.text("Play", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
   }
 }
