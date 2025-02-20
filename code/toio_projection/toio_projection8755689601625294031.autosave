@@ -7,7 +7,6 @@ CornerPinSurface surface;
 
 PGraphics offscreen;
 PImage mapImg;
-PImage infoImg;
 
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 ranges
@@ -40,10 +39,7 @@ float percentToNext;
 public int mapTOIOTargetX = 45;
 public int mapTOIOTargetY = 45;
 
-int pageNum = 0;
-StringList puffinPages = new StringList();
-StringList alcaPages = new StringList();
-StringList uriaPages = new StringList();
+
 
 //for OSC
 OscP5 oscP5;
@@ -119,7 +115,6 @@ void selectUria() {
 }
 
 void setup() {
-  prepInfo();
   selectUria();
 
   // Keystone will only work with P3D or OPENGL renderers,
@@ -172,8 +167,7 @@ void draw() {
   offscreen.image(mapImg, 20, 40);
 
   drawTimeline();
-  drawInfo();
-  drawIcons();
+
 
   offscreen.endDraw();
 
@@ -295,18 +289,11 @@ void drawTimeline() {
   //System.out.println("D");
   int leftX = int(currBird.points.get(timelinePrevTick).x);
   //System.out.println("E");
-  
-  // error bounds calculation, since there were times where timelineNextTick is out of bounds.
-  int lastPointIndex = currBird.points.size() - 1;
-  int rightX = int(currBird.points.get(lastPointIndex).x);
-  int rightY = int(currBird.points.get(lastPointIndex).y);
-  if (timelineNextTick >= 0 && timelineNextTick < currBird.points.size()) {
-    rightX = int(currBird.points.get(timelineNextTick).x);
-    rightY = int(currBird.points.get(timelineNextTick).y);
-  }
+  int rightX = int(currBird.points.get(timelineNextTick).x);
   //System.out.println("F");
   int leftY = int(currBird.points.get(timelinePrevTick).y);
   //System.out.println("E");
+  int rightY = int(currBird.points.get(timelineNextTick).y);
   //System.out.println("F");
   //System.out.println(percentToNext);
   //System.out.println(int((leftX + ((leftX - rightX)) * percentToNext)));
@@ -353,93 +340,8 @@ void assignCubes() {
   // assign toiobot purposes
   timelineTOIO = cubes[0];
   mapTOIO = cubes[1]; //This will be dynamically changed via selection
-  //cpauseplayTOIO = cubes[2];
+  pauseplayTOIO = cubes[2];
   //(also 1 is meant for bird selection this is just a stand in for testing)
   System.out.println("done assigning cubes");
   System.out.println(cubes);
-}
-
-void drawInfo() {
-  int infoMaxWidth = 300;
-  int infoMaxHeight = 300;
-  int infoOffset = 750;
-  int infoStartX = infoOffset;
-  int infoEndX = infoStartX + infoMaxWidth;
-  int infoY = 50;
-  String title = "Atlantic puffin";
-  StringList pages = puffinPages;
-  offscreen.fill(163, 251, 255);
-  offscreen.rect(infoStartX-(infoMaxWidth/2) - 5,infoY - 20,infoMaxWidth + 10, 20);
-  offscreen.rect(infoStartX-(infoMaxWidth/2) - 5,infoY + 20,infoMaxWidth + 10, infoMaxHeight+10);
-  offscreen.fill(0, 0, 0);
-  offscreen.text(title, infoStartX, infoY);
-  if (pageNum == 0) {
-    infoImg = loadImage(pages.get(pageNum));
-    infoImg.resize(infoMaxWidth,infoMaxHeight);
-    offscreen.image(infoImg, infoStartX-(infoMaxWidth/2),infoY + 25);
-  }
-  else {
-    offscreen.textAlign(CENTER, TOP); 
-    print("\nPAGE NUM: " + pageNum + "");
-    print("\nPAGE NUM: " + pages + "\n\n");
-    // added mod 4 to avoid index errors
-    offscreen.text(pages.get(pageNum % 4), infoStartX-(infoMaxWidth/2), infoY + 25, infoMaxWidth - 10, infoMaxHeight + 5);
-  }
-
-  pageNum = int(timelineTOIO.theta / 90);
-  System.out.println(pageNum);
-
-  //  timelineTOIO.target(timelineTOIO.x, timelineTOIO.y, currentRotationDirectionAngle);
-  
-}
-
-void prepInfo() {
-  puffinPages.append("PuffinImage.jpg");
-  puffinPages.append("The Atlantic puffin (Fratercula arctica), also known as the common puffin, is a species of seabird in the auk family. The Atlantic puffin breeds in Russia, Iceland, Ireland, Britain, Norway, Greenland, Newfoundland and Labrador, Nova Scotia, and the Faroe Islands, and as far south as Maine in the west and France in the east. It is most commonly found in the Westman Islands, Iceland. Although it has a large population and a wide range, the species has declined rapidly, at least in parts of its range, resulting in it being rated as vulnerable by the IUCN.");
-  puffinPages.append("On land, it has the typical upright stance of an auk. At sea, it swims on the surface and feeds on zooplankton, small fish, and crabs, which it catches by diving underwater, using its wings for propulsion. Spending the autumn and winter in the open ocean of the cold northern seas, the Atlantic puffin returns to coastal areas at the start of the breeding season in late spring. It nests in clifftop colonies, digging a burrow in which a single white egg is laid. Chicks mostly feed on whole fish and grow rapidly.");
-  puffinPages.append(" After about 6 weeks, they are fully fledged and make their way at night to the sea. They swim away from the shore and do not return to land for several years. Colonies are mostly on islands with no terrestrial predators, but adult birds and newly fledged chicks are at risk of attacks from the air by gulls and skuas. The puffin's striking appearance, large, colourful bill, waddling gait, and behaviour have given rise to nicknames such as 'clown of the sea' or 'sea parrot'. It is the official bird of the Canadian province of Newfoundland and Labrador.");
-  
-  alcaPages.append("AlcaImage.jpg");
-  alcaPages.append("The razorbill (Alca torda) is a North Atlantic colonial seabird and the only extant member of the genus Alca of the family Alcidae, the auks. It is the closest living relative of the extinct great auk (Pinguinus impennis). Historically, it has also been known as 'auk', 'razor-billed auk' and 'lesser auk'. Razorbills are primarily black with a white underside. The male and female are identical in plumage; however, males are generally larger than females.");
-  alcaPages.append("This agile bird, which is capable of both flight and diving, has a predominantly aquatic lifestyle and only comes to land in order to breed. It is monogamous, choosing one partner for life. Females lay one egg per year. Razorbills nest along coastal cliffs in enclosed or slightly exposed crevices. The parents spend equal amounts of time incubating, and once the chick has hatched, they take turns foraging for their young.");
-  alcaPages.append("Presently, this species faces major threats, including the destruction of breeding sites, oil spills, and deterioration of food quality. The IUCN records the population of the species as fluctuating, causing its status to interchange. It has been recorded that the population had increased from 2008 to 2015, decreased from 2015 to 2021, and appears to be increasing or stable at the present. It is estimated that the current global razorbill population lies between 838,000 and 1,600,000 individuals. In 1918, the razorbill was protected in the United States by the Migratory Bird Treaty Act.");
-  
-  
-  uriaPages.append("UriaImage.jpg");
-  uriaPages.append("The common murre or common guillemot (Uria aalge) is a large auk. It has a circumpolar distribution, occurring in low-Arctic and boreal waters in the North Atlantic and North Pacific. It spends most of its time at sea, only coming to land to breed on rocky cliff shores or islands. Common murres are fast in direct flight but are not very agile. They are highly mobile underwater using their wings to 'fly' through the water column, where they typically dive to depths of 30–60 m (100–195 ft). Depths of up to 180 m (590 ft) have been recorded.");
-  uriaPages.append("Common murres breed in colonies at high densities. Nesting pairs may be in bodily contact with their neighbours. They make no nest; their single egg is incubated between the adult's feet on a bare rock ledge on a cliff face. Eggs hatch after ~30 days incubation. The chick is born downy and can regulate its body temperature after 10 days. Some 20 days after hatching, the chick leaves its nesting ledge and heads for the sea, unable to fly, but gliding for some distance with fluttering wings, accompanied by its male parent. Male guillemots spend more time diving, and dive more deeply than females during this time.");
-  uriaPages.append("Chicks are capable of diving as soon as they hit the water. The female stays at the nest site for some 14 days after the chick has left. Both male and female common murres moult after breeding and become flightless for 1–2 months. Some populations have short migration distances, instead remaining close to the breeding site year-round. Such populations return to the nest site from autumn onwards. Adult birds balance their energetic budgets during the winter by reducing the time that they spend flying and are able to forage nocturnally.");
-
-}
-
-void drawIcons() {
-  PImage PuffinIcon = loadImage("PuffinIcon.png");
-  PImage AlcaIcon = loadImage("AlcaIcon.png");
-  PImage UriaIcon = loadImage("UriaIcon.png");
-  
-  int iconMaxWidth = 85;
-  int iconMaxHeight = 85;
-  int iconOffset = 510;
-  int iconStartX = iconOffset;
-  int iconEndX = iconStartX + iconMaxWidth;
-  int iconY = 50;
-  int iconSpacing = 30;
-  String title = "Select Animal:";
-  
-  offscreen.fill(125,249,255);
-  offscreen.rect(iconStartX-(50),iconY - 20,iconMaxWidth + 15, 340);
-  offscreen.fill(0, 0, 0);
-  
-  offscreen.textAlign(TOP, BASELINE); 
-  offscreen.text(title, iconStartX-42.5, iconY);
-  
-  PuffinIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(PuffinIcon, iconStartX-(iconMaxWidth/2),iconY + 10);
-  
-  AlcaIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(AlcaIcon, iconStartX-(iconMaxWidth/2),iconY + (80 + iconSpacing));
-  
-  UriaIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(UriaIcon, iconStartX-(iconMaxWidth/2),iconY + (180 + iconSpacing));
-  
 }
