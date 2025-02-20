@@ -2,14 +2,6 @@ import oscP5.*;
 import netP5.*;
 import deadpixel.keystone.*;
 
-
-// info bot setup (UPDATE REFRENFENCES IN INFO SECTION)
-// any fine tuning (LED's, title things)
-// attach the things to the toios
-// record the video
-// submit the deliverables
-
-
 Keystone ks;
 CornerPinSurface surface;
 
@@ -20,7 +12,7 @@ PImage infoImg;
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 ranges
 //the more toios you connect to, the more difficult it becomes to sustain the connection
-int nCubes = 6;
+int nCubes = 5;
 int cubesPerHost = 12;
 int maxMotorSpeed = 115;
 int xOffset;
@@ -55,8 +47,6 @@ StringList puffinPages = new StringList();
 StringList alcaPages = new StringList();
 StringList uriaPages = new StringList();
 
-String mapTitle = "Bird Movement Data";
-
 //for OSC
 OscP5 oscP5;
 //where to send the commands to
@@ -76,7 +66,6 @@ boolean paused = true;
 Cube puffinTOIO;
 Cube alcaTOIO;
 Cube uriaTOIO;
-Cube infoTOIO;
 
 // currently selected bird
 BirdData currBird;
@@ -97,12 +86,11 @@ void selectPuffin() {
 
 
   puffin.lapEndDateLabel = "End";
-  puffin.imagePath = "data/PuffinMap.png";
+  puffin.imagePath = "Puffins.png";
   puffin.printPoints();
 
   currBird = puffin;
   mapTOIO = puffinTOIO;
-  mapTitle = "Puffin Movement Data";
 
 }
 void selectAlca() {
@@ -115,12 +103,11 @@ void selectAlca() {
   addHome(alca);
 
   alca.lapEndDateLabel = "End";
-  alca.imagePath = "data/PuffinMap.png";
+  alca.imagePath = "Puffins.png";
   alca.printPoints();
 
   currBird = alca;
   mapTOIO = alcaTOIO;
-  mapTitle = "Razorbill Movement Data";
 
 }
 
@@ -135,12 +122,11 @@ void selectUria() {
   addHome(uria);
 
   uria.lapEndDateLabel = "End";
-  uria.imagePath = "data/PuffinMap.png";
+  uria.imagePath = "Puffins.png";
   uria.printPoints();
 
   currBird = uria;
   mapTOIO = uriaTOIO;
-  mapTitle = "Common Murre Movement Data";
 
 }
 
@@ -192,13 +178,10 @@ void draw() {
   // Draw the scene, offscreen
   offscreen.beginDraw();
   offscreen.background(255);
-  offscreen.fill(0, 0, 0);
-  //offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
+  offscreen.fill(0, 255, 0);
+  offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   mapImg.resize(375, 280);
   offscreen.image(mapImg, 20, 40);
-  offscreen.textAlign(TOP, CENTER);
-  //offscreen.text(mapTitle, 20, 20, 375, 10);
-  offscreen.text(mapTitle, 122, 20); //This may need to be adjusted/centered based on length
 
   drawTimeline();
   drawInfo();
@@ -206,6 +189,7 @@ void draw() {
   drawPlayPauseButton();
 
   offscreen.endDraw();
+
 
   // render the scene, transformed using the corner pin surface
   surface.render(offscreen);
@@ -246,13 +230,6 @@ void draw() {
   //END TEMPLATE/DEBUG VIE
 
   //INSERT YOUR CODE HERE!
-  if (!paused) {
-     autoplayTimeline();
-  }
-  print(paused);
-  if (mapTOIO != null) {
-    cubes[0].led(100, 163, 251, 255);
-  }
 }
 void drawTimeline() {
   int timelineMaxWidth = 320;
@@ -301,13 +278,8 @@ void drawTimeline() {
   //Determine which tick we're moving towards
   if (timelineTOIO.x > timelineStartX && timelineTOIO.x < timelineEndX) {
     //System.out.println("A");
-    if (timelineNextTick >= 0 && timelineNextTick < tickXs.size()) {
-      leftBound = tickXs.get(timelinePrevTick);
-      rightBound = tickXs.get(timelineNextTick);
-    } else {
-      leftBound = tickXs.get(tickXs.size()-2);
-      rightBound = tickXs.get(tickXs.size()-1);
-    }
+    leftBound = tickXs.get(timelinePrevTick);
+    rightBound = tickXs.get(timelineNextTick);
     //System.out.println("Done A");
     if (timelineTOIO.x > rightBound) {
       //System.out.println("B");
@@ -334,22 +306,19 @@ void drawTimeline() {
   //print("\n\n percentToNext = " + percentToNext + "\n\n");
   //System.out.println(percentToNext);
   //System.out.println("D");
+  int leftX = int(currBird.points.get(timelinePrevTick).x);
   //System.out.println("E");
 
-  int lastPointIndex = currBird.points.size() - 1;
-  int leftX = int(currBird.points.get(lastPointIndex).x);
-  int leftY = int(currBird.points.get(lastPointIndex).y);
-
   // error bounds calculation, since there were times where timelineNextTick is out of bounds.
+  int lastPointIndex = currBird.points.size() - 1;
   int rightX = int(currBird.points.get(lastPointIndex).x);
   int rightY = int(currBird.points.get(lastPointIndex).y);
   if (timelineNextTick >= 0 && timelineNextTick < currBird.points.size()) {
-    leftY = int(currBird.points.get(timelinePrevTick).y);
-    leftX = int(currBird.points.get(timelinePrevTick).x);
     rightX = int(currBird.points.get(timelineNextTick).x);
     rightY = int(currBird.points.get(timelineNextTick).y);
   }
   //System.out.println("F");
+  int leftY = int(currBird.points.get(timelinePrevTick).y);
   //System.out.println("E");
   //System.out.println("F");
   //System.out.println(percentToNext);
@@ -398,8 +367,6 @@ void drawInfo() {
   String title = "Info Section";
   StringList pages = new StringList();
   pages.append("Info.png");
-  pages.append(" ");
-  pages.append(" ");
   pages.append(" ");
   if (mapTOIO == puffinTOIO) {
     title = "Atlantic puffin";
@@ -506,13 +473,13 @@ void drawIcons() {
  
   // DETECT WHICH TOIO IS SELECTED
   if (!isToioNearHome(puffinTOIO)) {
-    //print("PUFFIN SELECTED");
+    print("PUFFINh SELECTED");
     selectPuffin();
   } else if (!isToioNearHome(alcaTOIO)) {
-    //print("ALCA SELECTED");
+    print("ALCA SELECTED");
     selectAlca();
   } else if (!isToioNearHome(uriaTOIO)) {
-    // print("URIA SELECTED");
+     print("URIA SELECTED");
     selectUria();
   }
   
@@ -533,7 +500,7 @@ boolean isToioNearHome(Cube c) {
   int p2 = c.homeX;
   int q2 = c.homeY;
   int distance = (int) Math.ceil(Math.sqrt((q2 - q1) * (q2 - q1) + (p2 - p1) * (p2 - p1)));
-  //print(c.id + " is " + distance + " ; ");
+  print(c.id + " is " + distance + " ; ");
   return distance <= tolerance;
 }
 
@@ -544,17 +511,15 @@ void togglePause() {
   // function to either play or pause the automatic timeline toio movement.
   if (paused) {
     // if previously paused, play
+    autoplayTimeline();
+
     paused = false;
-
-    //autoplayTimeline();
-
   } else {
     // if previously playing, pause
-    paused = true;
-
     print("stop boy stop!!");
 
 
+    paused = true;
   }
 
 }
@@ -562,15 +527,11 @@ void togglePause() {
 void autoplayTimeline() {
    // function to automatically move the timelineTOIO back and forth.
    //motorTarget(timelineTOIO, mode, 5, 0, 80, 0, x, y, theta);
-   print(paused);
-   print(paused);
-   timelineTOIO.target(95,385,0);
-   delay(4200);
-   //timelineTOIO.motor(100,100,200);
-   timelineTOIO.target(400,385,0);
+   timelineTOIO.target(45,365,90);
+   timelineTOIO.motor(100,100,300);
+   //timelineTOIO.target(45,365,90);
    //timelineTOIO.target(0,2,50,0,95,365,0);
-   delay(4200);
-  
+   delay(2000);
    //timelineTOIO.target(0,2,50,0,400,365,0);
 
    //void target(int control, int timeout, int mode, int maxspeed, int speedchange,  int x, int y, int theta) {
@@ -597,7 +558,6 @@ void assignCubes() {
   puffinTOIO = cubes[1];
   alcaTOIO = cubes[2];
   uriaTOIO = cubes[3];
-  infoTOIO = cubes[5];
   //(also 1 is meant for bird selection this is just a stand in for testing)
   System.out.println("done assigning cubes");
   System.out.println(cubes);
@@ -607,7 +567,7 @@ void drawPlayPauseButton() {
   int buttonMaxWidth = 85;
   int buttonHeight = 40;
   int buttonX = 470;
-  int buttonY = 50 + 180 + 85;
+  int buttonY = 50 + 180 + 85 + 30 + 40;
 
   offscreen.fill(200);
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
