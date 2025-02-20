@@ -254,7 +254,7 @@ void draw() {
   if (!paused) {
      autoplayTimeline();
   }
-  print(paused);
+  print("paused: " + paused);
   if (mapTOIO != null) {
     cubes[0].led(100, 163, 251, 255);
   }
@@ -572,7 +572,7 @@ void autoplayTimeline() {
    timelineTOIO.target(95,385,0);
    delay(4200);
    //timelineTOIO.motor(100,100,200);
-   timelineTOIO.target(400,385,0);
+   timelineTOIO.target(380,385,0);
    //timelineTOIO.target(0,2,50,0,95,365,0);
    delay(4200);
 
@@ -614,7 +614,7 @@ void drawPlayPauseButton() {
   int buttonX = 470;
   int buttonY = 50 + 180 + 85;
 
-  offscreen.fill(200);
+  // ADD PLAYPAUSE TOGGLE
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
 
   offscreen.fill(0);
