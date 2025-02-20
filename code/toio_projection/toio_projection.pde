@@ -517,7 +517,7 @@ void drawPlayPauseButton() {
   int buttonMaxWidth = 85;
   int buttonHeight = 40;
   int buttonX = 470;
-  int buttonY = 50 + 180 + 85 + 30 + 40;
+  int buttonY = 50 + 180 + 85;
 
   offscreen.fill(200);
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
