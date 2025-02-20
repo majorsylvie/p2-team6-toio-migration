@@ -26,6 +26,8 @@ int yOffset;
 //
 boolean WindowsMode = false; //When you enable this, it will check for connection with toio via Rust first, before starting void loop()
 
+boolean isPlaying = false;
+
 int framerate = 30;
 
 int[] matDimension = {10, 10, 455, 455};
@@ -86,7 +88,7 @@ void selectPuffin() {
   puffin.lapEndDateLabel = "End";
   puffin.imagePath = "Puffins.png";
   puffin.printPoints();
-  
+
   currBird = puffin;
 
 }
@@ -98,7 +100,7 @@ void selectAlca() {
   alca.addPoint(370, 164, "");
   alca.addPoint(364, 211, "");
   addHome(alca);
-  
+
   alca.lapEndDateLabel = "End";
   alca.imagePath = "Puffins.png";
   alca.printPoints();
@@ -115,11 +117,11 @@ void selectUria() {
   uria.addPoint(132, 323, "");
   uria.addPoint(157, 291, "");
   addHome(uria);
-  
+
   uria.lapEndDateLabel = "End";
   uria.imagePath = "Puffins.png";
   uria.printPoints();
-  
+
   currBird = uria;
 }
 
@@ -179,6 +181,7 @@ void draw() {
   drawTimeline();
   drawInfo();
   drawIcons();
+  drawPlayPauseButton();
 
   offscreen.endDraw();
 
@@ -265,7 +268,7 @@ void drawTimeline() {
   }
 
   ///TOIO MAP TARGETTING
-  
+
   //Here onward is for toio targeting on map
   //Determine which tick we're moving towards
   if (timelineTOIO.x > timelineStartX && timelineTOIO.x < timelineEndX) {
@@ -300,7 +303,7 @@ void drawTimeline() {
   //System.out.println("D");
   int leftX = int(currBird.points.get(timelinePrevTick).x);
   //System.out.println("E");
-  
+
   // error bounds calculation, since there were times where timelineNextTick is out of bounds.
   int lastPointIndex = currBird.points.size() - 1;
   int rightX = int(currBird.points.get(lastPointIndex).x);
@@ -319,13 +322,13 @@ void drawTimeline() {
   mapTOIOTargetY = int(leftY + ((rightY - leftY)) * percentToNext);
   //print("\nLEFT = " + leftX +  "," + leftY + "\nRIGHT = " + rightX + "," + rightY + "\n");
   //print("\nXXXXXXXX       " + mapTOIOTargetX + " " + mapTOIOTargetY + "            XXXXXXXXXXXXXXXX\n");
-  
+
   int deltaX = rightX - leftX;
   int deltaY = rightY - leftY;
   // calculate the angle between the two points
   double angleRadians = Math.atan2(deltaY, deltaX);
   int angleDegrees = (int) Math.floor(Math.toDegrees(angleRadians));
-  
+
   if (mapTOIO != null) {
       mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, angleDegrees);
   }
@@ -369,7 +372,7 @@ void drawInfo() {
     offscreen.image(infoImg, infoStartX-(infoMaxWidth/2),infoY + 25);
   }
   else {
-    offscreen.textAlign(CENTER, TOP); 
+    offscreen.textAlign(CENTER, TOP);
     // added mod 4 to avoid index errors
     offscreen.text(pages.get(pageNum % 4), infoStartX-(infoMaxWidth/2), infoY + 25, infoMaxWidth - 10, infoMaxHeight + 5);
   }
@@ -378,7 +381,7 @@ void drawInfo() {
   System.out.println(pageNum);
 
   //  timelineTOIO.target(timelineTOIO.x, timelineTOIO.y, currentRotationDirectionAngle);
-  
+
 }
 
 void prepInfo() {
@@ -386,13 +389,13 @@ void prepInfo() {
   puffinPages.append("The Atlantic puffin (Fratercula arctica), also known as the common puffin, is a species of seabird in the auk family. The Atlantic puffin breeds in Russia, Iceland, Ireland, Britain, Norway, Greenland, Newfoundland and Labrador, Nova Scotia, and the Faroe Islands, and as far south as Maine in the west and France in the east. It is most commonly found in the Westman Islands, Iceland. Although it has a large population and a wide range, the species has declined rapidly, at least in parts of its range, resulting in it being rated as vulnerable by the IUCN.");
   puffinPages.append("On land, it has the typical upright stance of an auk. At sea, it swims on the surface and feeds on zooplankton, small fish, and crabs, which it catches by diving underwater, using its wings for propulsion. Spending the autumn and winter in the open ocean of the cold northern seas, the Atlantic puffin returns to coastal areas at the start of the breeding season in late spring. It nests in clifftop colonies, digging a burrow in which a single white egg is laid. Chicks mostly feed on whole fish and grow rapidly.");
   puffinPages.append(" After about 6 weeks, they are fully fledged and make their way at night to the sea. They swim away from the shore and do not return to land for several years. Colonies are mostly on islands with no terrestrial predators, but adult birds and newly fledged chicks are at risk of attacks from the air by gulls and skuas. The puffin's striking appearance, large, colourful bill, waddling gait, and behaviour have given rise to nicknames such as 'clown of the sea' or 'sea parrot'. It is the official bird of the Canadian province of Newfoundland and Labrador.");
-  
+
   alcaPages.append("AlcaImage.jpg");
   alcaPages.append("The razorbill (Alca torda) is a North Atlantic colonial seabird and the only extant member of the genus Alca of the family Alcidae, the auks. It is the closest living relative of the extinct great auk (Pinguinus impennis). Historically, it has also been known as 'auk', 'razor-billed auk' and 'lesser auk'. Razorbills are primarily black with a white underside. The male and female are identical in plumage; however, males are generally larger than females.");
   alcaPages.append("This agile bird, which is capable of both flight and diving, has a predominantly aquatic lifestyle and only comes to land in order to breed. It is monogamous, choosing one partner for life. Females lay one egg per year. Razorbills nest along coastal cliffs in enclosed or slightly exposed crevices. The parents spend equal amounts of time incubating, and once the chick has hatched, they take turns foraging for their young.");
   alcaPages.append("Presently, this species faces major threats, including the destruction of breeding sites, oil spills, and deterioration of food quality. The IUCN records the population of the species as fluctuating, causing its status to interchange. It has been recorded that the population had increased from 2008 to 2015, decreased from 2015 to 2021, and appears to be increasing or stable at the present. It is estimated that the current global razorbill population lies between 838,000 and 1,600,000 individuals. In 1918, the razorbill was protected in the United States by the Migratory Bird Treaty Act.");
-  
-  
+
+
   uriaPages.append("UriaImage.jpg");
   uriaPages.append("The common murre or common guillemot (Uria aalge) is a large auk. It has a circumpolar distribution, occurring in low-Arctic and boreal waters in the North Atlantic and North Pacific. It spends most of its time at sea, only coming to land to breed on rocky cliff shores or islands. Common murres are fast in direct flight but are not very agile. They are highly mobile underwater using their wings to 'fly' through the water column, where they typically dive to depths of 30–60 m (100–195 ft). Depths of up to 180 m (590 ft) have been recorded.");
   uriaPages.append("Common murres breed in colonies at high densities. Nesting pairs may be in bodily contact with their neighbours. They make no nest; their single egg is incubated between the adult's feet on a bare rock ledge on a cliff face. Eggs hatch after ~30 days incubation. The chick is born downy and can regulate its body temperature after 10 days. Some 20 days after hatching, the chick leaves its nesting ledge and heads for the sea, unable to fly, but gliding for some distance with fluttering wings, accompanied by its male parent. Male guillemots spend more time diving, and dive more deeply than females during this time.");
@@ -404,7 +407,7 @@ void drawIcons() {
   PImage PuffinIcon = loadImage("PuffinIcon.png");
   PImage AlcaIcon = loadImage("AlcaIcon.png");
   PImage UriaIcon = loadImage("UriaIcon.png");
-  
+
   int iconMaxWidth = 60;
   int iconMaxHeight = 60;
   int iconOffset = 445;
@@ -413,30 +416,30 @@ void drawIcons() {
   int iconY = 60;
   int iconSpacing = 20;
   String title = "Select\nAnimal:";
-  
+
   offscreen.fill(125,249,255);
   offscreen.rect(iconStartX-(40),iconY - 20,iconMaxWidth + 15, 250);
   offscreen.fill(0, 0, 0);
-  
-  offscreen.textAlign(TOP, BASELINE); 
+
+  offscreen.textAlign(TOP, BASELINE);
   offscreen.text(title, iconStartX-32.5, iconY);
-  
-  
+
+
   int birdX = iconStartX-(iconMaxWidth/2);
   int puffY = iconY + 20;
   int alcaY = iconY + (70 + iconSpacing);
   int uriaY = iconY + (145 + iconSpacing);
-  
-  
+
+
   PuffinIcon.resize(iconMaxWidth,iconMaxHeight);
   offscreen.image(PuffinIcon, birdX,puffY);
-  
+
   AlcaIcon.resize(iconMaxWidth,iconMaxHeight);
   offscreen.image(AlcaIcon, birdX,alcaY);
-  
+
   UriaIcon.resize(iconMaxWidth,iconMaxHeight);
   offscreen.image(UriaIcon, birdX,uriaY);
-  
+
   puffinTOIO.homeX = birdX;
   puffinTOIO.homeY = puffY;
 
@@ -445,7 +448,7 @@ void drawIcons() {
 
   alcaTOIO.homeX = birdX;
   alcaTOIO.homeY = alcaY;
-  
+
   /*
   // DETECT WHICH TOIO IS SELECTED
   if (puffinTOIO is not near home) {
@@ -456,23 +459,23 @@ void drawIcons() {
         maoTOIO = uriaTOIO;
   }
   */
-  
+
 }
 void togglePause() {
   // function to either play or pause the automatic timeline toio movement.
   if (paused) {
     // if previously paused, play
     autoplayTimeline();
-    
+
     paused = false;
   } else {
     // if previously playing, pause
     print("stop boy stop!!");
-    
+
 
     paused = true;
   }
-  
+
 }
 
 void autoplayTimeline() {
@@ -480,7 +483,7 @@ void autoplayTimeline() {
    //timelineTOIO.target(0,2,50,0,95,365,0);
    delay(2000);
    //timelineTOIO.target(0,2,50,0,400,365,0);
-   
+
    //void target(int control, int timeout, int mode, int maxspeed, int speedchange,  int x, int y, int theta) {
 
 }
@@ -501,11 +504,31 @@ void assignCubes() {
   //mapTOIO = cubes[1]; //This will be dynamically changed via selection
   pauseplayTOIO = cubes[4];
   pauseplayTOIO.isPausePlay = true;
-  
+
   puffinTOIO = cubes[1];
   alcaTOIO = cubes[2];
   uriaTOIO = cubes[3];
   //(also 1 is meant for bird selection this is just a stand in for testing)
   System.out.println("done assigning cubes");
   System.out.println(cubes);
+}
+
+void drawPlayPauseButton() {
+  int buttonMaxWidth = 85;
+  int buttonHeight = 40;
+  int buttonX = 470;
+  int buttonY = 50 + 180 + 85 + 30 + 40;
+
+  offscreen.fill(200);
+  offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
+
+  offscreen.fill(0);
+  offscreen.textSize(20);
+  offscreen.textAlign(CENTER, CENTER);
+
+  if (isPlaying) {
+    offscreen.text("Pause", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
+  } else {
+    offscreen.text("Play", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
+  }
 }
