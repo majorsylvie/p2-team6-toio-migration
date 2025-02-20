@@ -176,6 +176,8 @@ void setup() {
 
   xOffset = matDimension[0] - 45;
   yOffset = matDimension[1] - 45;
+  
+
 
   //do not send TOO MANY PACKETS
   //we'll be updating the cubes every frame, so don't try to go too high
@@ -256,7 +258,7 @@ void draw() {
   }
   print("paused: " + paused);
   if (mapTOIO != null) {
-    cubes[0].led(100, 163, 251, 255);
+    mapTOIO.led(100, 163, 251, 255);
   }
 }
 void drawTimeline() {
@@ -621,8 +623,9 @@ void drawPlayPauseButton() {
   offscreen.textSize(20);
   offscreen.textAlign(CENTER, CENTER);
 
-  if (isPlaying) {
+  if (!paused) {
     offscreen.text("Pause", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
+    pauseplayTOIO.led(100,0,255,0);
   } else {
     offscreen.text("Play", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
   }
