@@ -3,7 +3,7 @@ import netP5.*;
 import deadpixel.keystone.*;
 
 
-// info bot setup
+// info bot setup (UPDATE REFRENFENCES IN INFO SECTION)
 // any fine tuning (LED's, title things)
 // attach the things to the toios
 // record the video
