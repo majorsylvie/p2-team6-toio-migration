@@ -12,7 +12,7 @@ PImage infoImg;
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 ranges
 //the more toios you connect to, the more difficult it becomes to sustain the connection
-int nCubes = 5;
+int nCubes = 6;
 int cubesPerHost = 12;
 int maxMotorSpeed = 115;
 int xOffset;
@@ -86,7 +86,7 @@ void selectPuffin() {
 
 
   puffin.lapEndDateLabel = "End";
-  puffin.imagePath = "Puffins.png";
+  puffin.imagePath = "data/PuffinMap.png";
   puffin.printPoints();
 
   currBird = puffin;
@@ -103,7 +103,7 @@ void selectAlca() {
   addHome(alca);
 
   alca.lapEndDateLabel = "End";
-  alca.imagePath = "Puffins.png";
+  alca.imagePath = "data/PuffinMap.png";
   alca.printPoints();
 
   currBird = alca;
@@ -122,7 +122,7 @@ void selectUria() {
   addHome(uria);
 
   uria.lapEndDateLabel = "End";
-  uria.imagePath = "Puffins.png";
+  uria.imagePath = "data/PuffinMap.png";
   uria.printPoints();
 
   currBird = uria;
@@ -179,7 +179,7 @@ void draw() {
   offscreen.beginDraw();
   offscreen.background(255);
   offscreen.fill(0, 255, 0);
-  offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
+  //offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   mapImg.resize(375, 280);
   offscreen.image(mapImg, 20, 40);
 
@@ -230,6 +230,10 @@ void draw() {
   //END TEMPLATE/DEBUG VIE
 
   //INSERT YOUR CODE HERE!
+  if (!paused) {
+     autoplayTimeline();
+  }
+  print(paused);
 }
 void drawTimeline() {
   int timelineMaxWidth = 320;
@@ -278,8 +282,13 @@ void drawTimeline() {
   //Determine which tick we're moving towards
   if (timelineTOIO.x > timelineStartX && timelineTOIO.x < timelineEndX) {
     //System.out.println("A");
-    leftBound = tickXs.get(timelinePrevTick);
-    rightBound = tickXs.get(timelineNextTick);
+    if (timelineNextTick >= 0 && timelineNextTick < tickXs.size()) {
+      leftBound = tickXs.get(timelinePrevTick);
+      rightBound = tickXs.get(timelineNextTick);
+    } else {
+      leftBound = tickXs.get(tickXs.size()-2);
+      rightBound = tickXs.get(tickXs.size()-1);
+    }
     //System.out.println("Done A");
     if (timelineTOIO.x > rightBound) {
       //System.out.println("B");
@@ -299,26 +308,29 @@ void drawTimeline() {
   } else if (timelineTOIO.x >= timelineEndX) {
     timelinePrevTick = numTicks-2;
     timelineNextTick = numTicks-1;
-    timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
+    //timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
   }
   currentX = timelineTOIO.x;
   percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
   //print("\n\n percentToNext = " + percentToNext + "\n\n");
   //System.out.println(percentToNext);
   //System.out.println("D");
-  int leftX = int(currBird.points.get(timelinePrevTick).x);
   //System.out.println("E");
 
-  // error bounds calculation, since there were times where timelineNextTick is out of bounds.
   int lastPointIndex = currBird.points.size() - 1;
+  int leftX = int(currBird.points.get(lastPointIndex).x);
+  int leftY = int(currBird.points.get(lastPointIndex).y);
+
+  // error bounds calculation, since there were times where timelineNextTick is out of bounds.
   int rightX = int(currBird.points.get(lastPointIndex).x);
   int rightY = int(currBird.points.get(lastPointIndex).y);
   if (timelineNextTick >= 0 && timelineNextTick < currBird.points.size()) {
+    leftY = int(currBird.points.get(timelinePrevTick).y);
+    leftX = int(currBird.points.get(timelinePrevTick).x);
     rightX = int(currBird.points.get(timelineNextTick).x);
     rightY = int(currBird.points.get(timelineNextTick).y);
   }
   //System.out.println("F");
-  int leftY = int(currBird.points.get(timelinePrevTick).y);
   //System.out.println("E");
   //System.out.println("F");
   //System.out.println(percentToNext);
@@ -459,13 +471,13 @@ void drawIcons() {
  
   // DETECT WHICH TOIO IS SELECTED
   if (!isToioNearHome(puffinTOIO)) {
-    print("PUFFINh SELECTED");
+    //print("PUFFINh SELECTED");
     selectPuffin();
   } else if (!isToioNearHome(alcaTOIO)) {
-    print("ALCA SELECTED");
+    //print("ALCA SELECTED");
     selectAlca();
   } else if (!isToioNearHome(uriaTOIO)) {
-     print("URIA SELECTED");
+    // print("URIA SELECTED");
     selectUria();
   }
   
@@ -486,7 +498,7 @@ boolean isToioNearHome(Cube c) {
   int p2 = c.homeX;
   int q2 = c.homeY;
   int distance = (int) Math.ceil(Math.sqrt((q2 - q1) * (q2 - q1) + (p2 - p1) * (p2 - p1)));
-  print(c.id + " is " + distance + " ; ");
+  //print(c.id + " is " + distance + " ; ");
   return distance <= tolerance;
 }
 
@@ -497,15 +509,17 @@ void togglePause() {
   // function to either play or pause the automatic timeline toio movement.
   if (paused) {
     // if previously paused, play
-    autoplayTimeline();
-
     paused = false;
+
+    //autoplayTimeline();
+
   } else {
     // if previously playing, pause
+    paused = true;
+
     print("stop boy stop!!");
 
 
-    paused = true;
   }
 
 }
@@ -513,11 +527,15 @@ void togglePause() {
 void autoplayTimeline() {
    // function to automatically move the timelineTOIO back and forth.
    //motorTarget(timelineTOIO, mode, 5, 0, 80, 0, x, y, theta);
-   timelineTOIO.target(45,365,90);
-   timelineTOIO.motor(100,100,300);
-   //timelineTOIO.target(45,365,90);
+   print(paused);
+   print(paused);
+   timelineTOIO.target(95,385,0);
+   delay(4200);
+   //timelineTOIO.motor(100,100,200);
+   timelineTOIO.target(400,385,0);
    //timelineTOIO.target(0,2,50,0,95,365,0);
-   delay(2000);
+   delay(4200);
+  
    //timelineTOIO.target(0,2,50,0,400,365,0);
 
    //void target(int control, int timeout, int mode, int maxspeed, int speedchange,  int x, int y, int theta) {
