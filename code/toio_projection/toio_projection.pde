@@ -47,6 +47,8 @@ StringList puffinPages = new StringList();
 StringList alcaPages = new StringList();
 StringList uriaPages = new StringList();
 
+String mapTitle = "Bird Movement Data";
+
 //for OSC
 OscP5 oscP5;
 //where to send the commands to
@@ -91,6 +93,7 @@ void selectPuffin() {
 
   currBird = puffin;
   mapTOIO = puffinTOIO;
+  mapTitle = "Puffin Movement Data";
 
 }
 void selectAlca() {
@@ -108,6 +111,7 @@ void selectAlca() {
 
   currBird = alca;
   mapTOIO = alcaTOIO;
+  mapTitle = "Razorbill Movement Data";
 
 }
 
@@ -127,6 +131,7 @@ void selectUria() {
 
   currBird = uria;
   mapTOIO = uriaTOIO;
+  mapTitle = "Common Murre Movement Data";
 
 }
 
@@ -178,10 +183,13 @@ void draw() {
   // Draw the scene, offscreen
   offscreen.beginDraw();
   offscreen.background(255);
-  offscreen.fill(0, 255, 0);
+  offscreen.fill(0, 0, 0);
   //offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   mapImg.resize(375, 280);
   offscreen.image(mapImg, 20, 40);
+  offscreen.textAlign(TOP, CENTER);
+  //offscreen.text(mapTitle, 20, 20, 375, 10);
+  offscreen.text(mapTitle, 122, 20); //This may need to be adjusted/centered based on length
 
   drawTimeline();
   drawInfo();
@@ -189,7 +197,6 @@ void draw() {
   drawPlayPauseButton();
 
   offscreen.endDraw();
-
 
   // render the scene, transformed using the corner pin surface
   surface.render(offscreen);
@@ -234,6 +241,9 @@ void draw() {
      autoplayTimeline();
   }
   print(paused);
+  if (mapTOIO != null) {
+    cubes[0].led(100, 163, 251, 255);
+  }
 }
 void drawTimeline() {
   int timelineMaxWidth = 320;
@@ -485,7 +495,7 @@ void drawIcons() {
  
   // DETECT WHICH TOIO IS SELECTED
   if (!isToioNearHome(puffinTOIO)) {
-    //print("PUFFINh SELECTED");
+    //print("PUFFIN SELECTED");
     selectPuffin();
   } else if (!isToioNearHome(alcaTOIO)) {
     //print("ALCA SELECTED");
