@@ -4,10 +4,12 @@ import deadpixel.keystone.*;
 
 
 // info bot setup
-// any fine tuning 
+// any fine tuning
   //LED's
     //turning on/off light when the autoplay function ends
   //title centering
+// info bot setup (UPDATE REFRENFENCES IN INFO SECTION)
+// any fine tuning (LED's, title things)
 // attach the things to the toios
 // record the video
 // submit the deliverables
@@ -58,6 +60,8 @@ StringList puffinPages = new StringList();
 StringList alcaPages = new StringList();
 StringList uriaPages = new StringList();
 
+String mapTitle = "Bird Movement Data";
+
 //for OSC
 OscP5 oscP5;
 //where to send the commands to
@@ -103,6 +107,7 @@ void selectPuffin() {
 
   currBird = puffin;
   mapTOIO = puffinTOIO;
+  mapTitle = "Puffin Movement Data";
 
 }
 void selectAlca() {
@@ -120,6 +125,7 @@ void selectAlca() {
 
   currBird = alca;
   mapTOIO = alcaTOIO;
+  mapTitle = "Razorbill Movement Data";
 
 }
 
@@ -139,6 +145,7 @@ void selectUria() {
 
   currBird = uria;
   mapTOIO = uriaTOIO;
+  mapTitle = "Common Murre Movement Data";
 
 }
 
@@ -190,10 +197,13 @@ void draw() {
   // Draw the scene, offscreen
   offscreen.beginDraw();
   offscreen.background(255);
-  offscreen.fill(0, 255, 0);
+  offscreen.fill(0, 0, 0);
   //offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   mapImg.resize(375, 280);
   offscreen.image(mapImg, 20, 40);
+  offscreen.textAlign(TOP, CENTER);
+  //offscreen.text(mapTitle, 20, 20, 375, 10);
+  offscreen.text(mapTitle, 122, 20); //This may need to be adjusted/centered based on length
 
   drawTimeline();
   drawInfo();
@@ -201,7 +211,6 @@ void draw() {
   drawPlayPauseButton();
 
   offscreen.endDraw();
-
 
   // render the scene, transformed using the corner pin surface
   surface.render(offscreen);
@@ -246,6 +255,9 @@ void draw() {
      autoplayTimeline();
   }
   print(paused);
+  if (mapTOIO != null) {
+    cubes[0].led(100, 163, 251, 255);
+  }
 }
 void drawTimeline() {
   int timelineMaxWidth = 320;
@@ -496,10 +508,10 @@ void drawIcons() {
   alcaTOIO.homeX = birdX;
   alcaTOIO.homeY = alcaY + cont - 5;
 
- 
+
   // DETECT WHICH TOIO IS SELECTED
   if (!isToioNearHome(puffinTOIO)) {
-    //print("PUFFINh SELECTED");
+    //print("PUFFIN SELECTED");
     selectPuffin();
   } else if (!isToioNearHome(alcaTOIO)) {
     //print("ALCA SELECTED");
@@ -508,7 +520,7 @@ void drawIcons() {
     // print("URIA SELECTED");
     selectUria();
   }
-  
+
   if (isToioNearHome(puffinTOIO) && mapTOIO == puffinTOIO) {
     mapTOIO = null;
   } else if (isToioNearHome(alcaTOIO) && mapTOIO == alcaTOIO) {
@@ -520,7 +532,7 @@ void drawIcons() {
 
 boolean isToioNearHome(Cube c) {
   int tolerance = 30;
-  
+
   int p1 = c.x;
   int q1 = c.y;
   int p2 = c.homeX;
@@ -563,7 +575,7 @@ void autoplayTimeline() {
    timelineTOIO.target(400,385,0);
    //timelineTOIO.target(0,2,50,0,95,365,0);
    delay(4200);
-  
+
    //timelineTOIO.target(0,2,50,0,400,365,0);
 
    //void target(int control, int timeout, int mode, int maxspeed, int speedchange,  int x, int y, int theta) {
@@ -600,7 +612,7 @@ void drawPlayPauseButton() {
   int buttonMaxWidth = 85;
   int buttonHeight = 40;
   int buttonX = 470;
-  int buttonY = 50 + 180 + 85 + 30 + 40;
+  int buttonY = 50 + 180 + 85;
 
   offscreen.fill(200);
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
