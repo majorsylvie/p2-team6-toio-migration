@@ -2,6 +2,14 @@ import oscP5.*;
 import netP5.*;
 import deadpixel.keystone.*;
 
+
+// info bot setup
+// any fine tuning (LED's, title things)
+// attach the things to the toios
+// record the video
+// submit the deliverables
+
+
 Keystone ks;
 CornerPinSurface surface;
 
@@ -68,6 +76,7 @@ boolean paused = true;
 Cube puffinTOIO;
 Cube alcaTOIO;
 Cube uriaTOIO;
+Cube infoTOIO;
 
 // currently selected bird
 BirdData currBird;
@@ -318,7 +327,7 @@ void drawTimeline() {
   } else if (timelineTOIO.x >= timelineEndX) {
     timelinePrevTick = numTicks-2;
     timelineNextTick = numTicks-1;
-    //timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
+    timelineTOIO.target(int(tickXs.get(numTicks-1)), timelineY, 90);
   }
   currentX = timelineTOIO.x;
   percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
@@ -389,6 +398,8 @@ void drawInfo() {
   String title = "Info Section";
   StringList pages = new StringList();
   pages.append("Info.png");
+  pages.append(" ");
+  pages.append(" ");
   pages.append(" ");
   if (mapTOIO == puffinTOIO) {
     title = "Atlantic puffin";
@@ -586,6 +597,7 @@ void assignCubes() {
   puffinTOIO = cubes[1];
   alcaTOIO = cubes[2];
   uriaTOIO = cubes[3];
+  infoTOIO = cubes[5];
   //(also 1 is meant for bird selection this is just a stand in for testing)
   System.out.println("done assigning cubes");
   System.out.println(cubes);
