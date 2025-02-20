@@ -436,7 +436,7 @@ void drawInfo() {
     offscreen.text(pages.get(pageNum % 4), infoStartX-(infoMaxWidth/2), infoY + 25, infoMaxWidth - 10, infoMaxHeight + 5);
   }
 
-  pageNum = int(timelineTOIO.theta / 90);
+  pageNum = int(infoTOIO.theta / 90);
   System.out.println(pageNum);
 
   //  timelineTOIO.target(timelineTOIO.x, timelineTOIO.y, currentRotationDirectionAngle);
@@ -571,12 +571,25 @@ void autoplayTimeline() {
    //motorTarget(timelineTOIO, mode, 5, 0, 80, 0, x, y, theta);
    print(paused);
    print(paused);
-   timelineTOIO.target(95,385,0);
-   delay(4200);
+   
+  
+   int m = millis();
+   int mm = m % 8000;
+   if (m % 8000 < 500) {
+       print("GOING TO START");
+       timelineTOIO.target(95,385,0);
+   } else if (mm > 4500 && mm < 5000) {
+       print("GOING TO END");
+       timelineTOIO.target(380,385,0);
+
+   }
+
+//   timelineTOIO.target(95,385,0);
+  //    timelineTOIO.target(380,385,0);
+
    //timelineTOIO.motor(100,100,200);
-   timelineTOIO.target(380,385,0);
    //timelineTOIO.target(0,2,50,0,95,365,0);
-   delay(4200);
+   //elay(4200);
 
    //timelineTOIO.target(0,2,50,0,400,365,0);
 
@@ -617,7 +630,8 @@ void drawPlayPauseButton() {
   int buttonY = 50 + 180 + 85;
 
   // ADD PLAYPAUSE TOGGLE
-  offscreen.fill(50,105,255);
+  offscreen.fill(163, 251, 255);
+
   offscreen.rect(buttonX, buttonY, buttonMaxWidth, buttonHeight);
 
   offscreen.fill(0);
@@ -627,7 +641,7 @@ void drawPlayPauseButton() {
   if (!paused) {
     offscreen.fill(0,0,0);
     offscreen.text("Pause", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
-    pauseplayTOIO.led(100,0,255,0);
+    pauseplayTOIO.led(50,0,255,0);
   } else {
     offscreen.fill(0,0,0);
     offscreen.text("Play", buttonX + buttonMaxWidth / 2, buttonY + buttonHeight / 2);
