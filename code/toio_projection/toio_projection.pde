@@ -50,7 +50,10 @@ NetAddress[] server;
 Cube[] cubes;
 // variable for the one toio cube that will move along the timeline.
 Cube timelineTOIO;
+// the one toio that is moving based on the timelineTOIO
 Cube mapTOIO;
+// toio that will be pressed to pause and play
+Cube pauseplayTOIO;
 
 
 // currently selected bird
@@ -296,8 +299,8 @@ void drawTimeline() {
   //System.out.println(int((leftX + ((leftX - rightX)) * percentToNext)));
   mapTOIOTargetX = int(leftX + ((rightX - leftX)) * percentToNext);
   mapTOIOTargetY = int(leftY + ((rightY - leftY)) * percentToNext);
-  print("\nLEFT = " + leftX +  "," + leftY + "\nRIGHT = " + rightX + "," + rightY + "\n");
-  print("\nXXXXXXXX       " + mapTOIOTargetX + " " + mapTOIOTargetY + "            XXXXXXXXXXXXXXXX\n");
+  //print("\nLEFT = " + leftX +  "," + leftY + "\nRIGHT = " + rightX + "," + rightY + "\n");
+  //print("\nXXXXXXXX       " + mapTOIOTargetX + " " + mapTOIOTargetY + "            XXXXXXXXXXXXXXXX\n");
   
   int deltaX = rightX - leftX;
   int deltaY = rightY - leftY;
@@ -337,6 +340,7 @@ void assignCubes() {
   // assign toiobot purposes
   timelineTOIO = cubes[0];
   mapTOIO = cubes[1]; //This will be dynamically changed via selection
+  pauseplayTOIO = cubes[2];
   //(also 1 is meant for bird selection this is just a stand in for testing)
   System.out.println("done assigning cubes");
   System.out.println(cubes);
