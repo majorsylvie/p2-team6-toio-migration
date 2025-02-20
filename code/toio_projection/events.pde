@@ -20,8 +20,12 @@ void keyPressed() {
     ks.save();
     break;
   
-  case '1': //raw motor control
+  case 'h': //raw motor control
 
+    mapTOIO = null;
+    runHome(puffinTOIO);
+    runHome(alcaTOIO);
+    runHome(uriaTOIO);
     //basic motor control w/ duration, specification found at:
     //https://toio.github.io/toio-spec/en/docs/ble_motor/#motor-control-with-specified-duration
     //can use negative numbers to move toio backwards
