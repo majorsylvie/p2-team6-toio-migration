@@ -26,7 +26,7 @@ public class BirdData {
     }
     public void printPoints() {
         for (Point point : points) {
-            System.out.println("(" + point.x + ", " + point.y + ") - " + point.label);
+            //System.out.println("(" + point.x + ", " + point.y + ") - " + point.label);
         }
     }
 }

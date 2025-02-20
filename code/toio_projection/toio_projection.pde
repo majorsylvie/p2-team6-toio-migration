@@ -12,7 +12,7 @@ PImage infoImg;
 //constants
 //The soft limit on how many toios a laptop can handle is in the 10-12 ranges
 //the more toios you connect to, the more difficult it becomes to sustain the connection
-int nCubes = 2;
+int nCubes = 5;
 int cubesPerHost = 12;
 int maxMotorSpeed = 115;
 int xOffset;
@@ -58,7 +58,12 @@ Cube timelineTOIO;
 Cube mapTOIO;
 // toio that will be pressed to pause and play
 Cube pauseplayTOIO;
+// whether or not the timline is automatically moving. starts still
+boolean paused = true;
 
+Cube puffinTOIO;
+Cube alcaTOIO;
+Cube uriaTOIO;
 
 // currently selected bird
 BirdData currBird;
@@ -120,7 +125,7 @@ void selectUria() {
 
 void setup() {
   prepInfo();
-  selectUria();
+  selectAlca();
 
   // Keystone will only work with P3D or OPENGL renderers,
   // since it relies on texture mapping to deform
@@ -219,7 +224,7 @@ void draw() {
   //INSERT YOUR CODE HERE!
 }
 void drawTimeline() {
-  int timelineMaxWidth = 340;
+  int timelineMaxWidth = 320;
   int timelineOffset = 45;
   int timelineStartX = timelineOffset;
   int timelineEndX = timelineStartX + timelineMaxWidth;
@@ -290,7 +295,7 @@ void drawTimeline() {
   }
   currentX = timelineTOIO.x;
   percentToNext = ((currentX - leftBound) / (rightBound - leftBound));
-  print("\n\n percentToNext = " + percentToNext + "\n\n");
+  //print("\n\n percentToNext = " + percentToNext + "\n\n");
   //System.out.println(percentToNext);
   //System.out.println("D");
   int leftX = int(currBird.points.get(timelinePrevTick).x);
@@ -320,7 +325,10 @@ void drawTimeline() {
   // calculate the angle between the two points
   double angleRadians = Math.atan2(deltaY, deltaX);
   int angleDegrees = (int) Math.floor(Math.toDegrees(angleRadians));
-  mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, angleDegrees);
+  
+  if (mapTOIO != null) {
+      mapTOIO.target(mapTOIOTargetX, mapTOIOTargetY, angleDegrees);
+  }
 }
 
 void drawLabel(float x, float y, String label) {
@@ -339,24 +347,6 @@ void drawLabel(float x, float y, String label) {
   // Draw the main text
   offscreen.fill(200, 50, 50); // Soft red color
   offscreen.text(label, x, y - 5);
-}
-
-void assignCubes() {
-  System.out.println("assigning cubes");
-  //create cubes
-  cubes = new Cube[nCubes];
-  for (int i = 0; i< nCubes; ++i) {
-    cubes[i] = new Cube(i);
-     System.out.println(cubes);
-  }
-
-  // assign toiobot purposes
-  timelineTOIO = cubes[0];
-  mapTOIO = cubes[1]; //This will be dynamically changed via selection
-  //cpauseplayTOIO = cubes[2];
-  //(also 1 is meant for bird selection this is just a stand in for testing)
-  System.out.println("done assigning cubes");
-  System.out.println(cubes);
 }
 
 void drawInfo() {
@@ -380,8 +370,6 @@ void drawInfo() {
   }
   else {
     offscreen.textAlign(CENTER, TOP); 
-    print("\nPAGE NUM: " + pageNum + "");
-    print("\nPAGE NUM: " + pages + "\n\n");
     // added mod 4 to avoid index errors
     offscreen.text(pages.get(pageNum % 4), infoStartX-(infoMaxWidth/2), infoY + 25, infoMaxWidth - 10, infoMaxHeight + 5);
   }
@@ -417,29 +405,107 @@ void drawIcons() {
   PImage AlcaIcon = loadImage("AlcaIcon.png");
   PImage UriaIcon = loadImage("UriaIcon.png");
   
-  int iconMaxWidth = 85;
-  int iconMaxHeight = 85;
-  int iconOffset = 510;
+  int iconMaxWidth = 60;
+  int iconMaxHeight = 60;
+  int iconOffset = 445;
   int iconStartX = iconOffset;
   int iconEndX = iconStartX + iconMaxWidth;
-  int iconY = 50;
-  int iconSpacing = 30;
-  String title = "Select Animal:";
+  int iconY = 60;
+  int iconSpacing = 20;
+  String title = "Select\nAnimal:";
   
   offscreen.fill(125,249,255);
-  offscreen.rect(iconStartX-(50),iconY - 20,iconMaxWidth + 15, 340);
+  offscreen.rect(iconStartX-(40),iconY - 20,iconMaxWidth + 15, 250);
   offscreen.fill(0, 0, 0);
   
   offscreen.textAlign(TOP, BASELINE); 
-  offscreen.text(title, iconStartX-42.5, iconY);
+  offscreen.text(title, iconStartX-32.5, iconY);
+  
+  
+  int birdX = iconStartX-(iconMaxWidth/2);
+  int puffY = iconY + 20;
+  int alcaY = iconY + (70 + iconSpacing);
+  int uriaY = iconY + (145 + iconSpacing);
+  
   
   PuffinIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(PuffinIcon, iconStartX-(iconMaxWidth/2),iconY + 10);
+  offscreen.image(PuffinIcon, birdX,puffY);
   
   AlcaIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(AlcaIcon, iconStartX-(iconMaxWidth/2),iconY + (80 + iconSpacing));
+  offscreen.image(AlcaIcon, birdX,alcaY);
   
   UriaIcon.resize(iconMaxWidth,iconMaxHeight);
-  offscreen.image(UriaIcon, iconStartX-(iconMaxWidth/2),iconY + (180 + iconSpacing));
+  offscreen.image(UriaIcon, birdX,uriaY);
   
+  puffinTOIO.homeX = birdX;
+  puffinTOIO.homeY = puffY;
+
+  uriaTOIO.homeX = birdX;
+  uriaTOIO.homeY = uriaY;
+
+  alcaTOIO.homeX = birdX;
+  alcaTOIO.homeY = alcaY;
+  
+  /*
+  // DETECT WHICH TOIO IS SELECTED
+  if (puffinTOIO is not near home) {
+    maoTOIO = puffinTOIO;
+  } else if (alcaTOIO is not near home) {
+        maoTOIO = alcaTOIO;
+  } else if (uriaTOIO is not near home {
+        maoTOIO = uriaTOIO;
+  }
+  */
+  
+}
+void togglePause() {
+  // function to either play or pause the automatic timeline toio movement.
+  if (paused) {
+    // if previously paused, play
+    autoplayTimeline();
+    
+    paused = false;
+  } else {
+    // if previously playing, pause
+    print("stop boy stop!!");
+    
+
+    paused = true;
+  }
+  
+}
+
+void autoplayTimeline() {
+   // function to automatically move the timelineTOIO back and forth.
+   //timelineTOIO.target(0,2,50,0,95,365,0);
+   delay(2000);
+   //timelineTOIO.target(0,2,50,0,400,365,0);
+   
+   //void target(int control, int timeout, int mode, int maxspeed, int speedchange,  int x, int y, int theta) {
+
+}
+
+
+
+void assignCubes() {
+  System.out.println("assigning cubes");
+  //create cubes
+  cubes = new Cube[nCubes];
+  for (int i = 0; i< nCubes; ++i) {
+    cubes[i] = new Cube(i);
+     System.out.println(cubes);
+  }
+
+  // assign toiobot purposes
+  timelineTOIO = cubes[0];
+  //mapTOIO = cubes[1]; //This will be dynamically changed via selection
+  pauseplayTOIO = cubes[4];
+  pauseplayTOIO.isPausePlay = true;
+  
+  puffinTOIO = cubes[1];
+  alcaTOIO = cubes[2];
+  uriaTOIO = cubes[3];
+  //(also 1 is meant for bird selection this is just a stand in for testing)
+  System.out.println("done assigning cubes");
+  System.out.println(cubes);
 }

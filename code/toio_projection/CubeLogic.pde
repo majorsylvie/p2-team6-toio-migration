@@ -1,4 +1,7 @@
 class Cube {
+  boolean isPausePlay;
+  int homeX;
+  int homeY;
   int id;
   boolean isActive;
   long lastUpdate;
@@ -54,6 +57,7 @@ class Cube {
     lastUpdate = System.currentTimeMillis();
     isActive = false;
     buttonDown = false;
+    isPausePlay = false;
   }
   
   void checkActive(long now) {

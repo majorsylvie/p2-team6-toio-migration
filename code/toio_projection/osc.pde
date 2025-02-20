@@ -257,9 +257,9 @@ void postureRequest(boolean euler, int[] cubeId) {
 }
 
 void oscEvent(OscMessage msg) {
-  print("0");
+  ////print("0");
   if (msg.checkAddrPattern("/position")) {
-    print("1");
+    ////print("1");
     //this collects position information 
     int hostId = msg.get(0).intValue();
     int id = msg.get(1).intValue();
@@ -274,7 +274,7 @@ void oscEvent(OscMessage msg) {
   } 
   
   else if (msg.checkAddrPattern("/battery")) {
-    print("2");
+    ////print("2");
     //this collects battery value information
     int hostId = msg.get(0).intValue();
     int id = msg.get(1).intValue();
@@ -286,7 +286,7 @@ void oscEvent(OscMessage msg) {
   }
   
   else if (msg.checkAddrPattern("/motion")) {
-    print("3");
+    //print("3");
     //this collects motion sensor information
     int hostId = msg.get(0).intValue();
     int id = msg.get(1).intValue();
@@ -303,7 +303,7 @@ void oscEvent(OscMessage msg) {
   
   else if (msg.checkAddrPattern("/magnetic")) {
     //this collects magnetic sensor information
-    print("4");
+    ////print("4");
     int hostId = msg.get(0).intValue();
     int relid = msg.get(1).intValue();
     int id = cubesPerHost*hostId + relid;
@@ -319,7 +319,7 @@ void oscEvent(OscMessage msg) {
   }
   
   else if (msg.checkAddrPattern("/postureeuler")) {
-    print("5");
+    //print("5");
     //this collects posture sensor information (in eulers)
     int hostId = msg.get(0).intValue();
     int id = msg.get(1).intValue();
@@ -333,7 +333,7 @@ void oscEvent(OscMessage msg) {
   } 
   
   else if (msg.checkAddrPattern("/posturequaternion")) {
-    print("6");
+    //print("6");
     //this collects posture sensor information (in quaternion)
     int hostId = msg.get(0).intValue();
     int id = msg.get(1).intValue();
@@ -348,7 +348,7 @@ void oscEvent(OscMessage msg) {
   } 
   
   else if (msg.checkAddrPattern("/button")) {
-    print("7");
+    //print("7");
     //this collects button information
     int hostId = msg.get(0).intValue();
     int relid = msg.get(1).intValue();
@@ -364,7 +364,7 @@ void oscEvent(OscMessage msg) {
   }
   
   else if (msg.checkAddrPattern("/motorresponse")) {
-    print("8");
+    ////print("8");
     //this collects button information
     int hostId = msg.get(0).intValue();
     int relid = msg.get(1).intValue();
