@@ -480,6 +480,10 @@ void togglePause() {
 
 void autoplayTimeline() {
    // function to automatically move the timelineTOIO back and forth.
+   //motorTarget(timelineTOIO, mode, 5, 0, 80, 0, x, y, theta);
+   timelineTOIO.target(45,365,90);
+   timelineTOIO.motor(100,100,300);
+   //timelineTOIO.target(45,365,90);
    //timelineTOIO.target(0,2,50,0,95,365,0);
    delay(2000);
    //timelineTOIO.target(0,2,50,0,400,365,0);
