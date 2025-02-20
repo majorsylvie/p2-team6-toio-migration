@@ -4,7 +4,10 @@ import deadpixel.keystone.*;
 
 
 // info bot setup
-// any fine tuning (LED's, title things)
+// any fine tuning 
+  //LED's
+    //turning on/off light when the autoplay function ends
+  //title centering
 // attach the things to the toios
 // record the video
 // submit the deliverables
