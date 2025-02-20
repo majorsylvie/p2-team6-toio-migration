@@ -90,6 +90,7 @@ void selectPuffin() {
   puffin.printPoints();
 
   currBird = puffin;
+  mapTOIO = puffinTOIO;
 
 }
 void selectAlca() {
@@ -106,6 +107,8 @@ void selectAlca() {
   alca.printPoints();
 
   currBird = alca;
+  mapTOIO = alcaTOIO;
+
 }
 
 void selectUria() {
@@ -123,6 +126,8 @@ void selectUria() {
   uria.printPoints();
 
   currBird = uria;
+  mapTOIO = uriaTOIO;
+
 }
 
 void setup() {
@@ -440,26 +445,53 @@ void drawIcons() {
   UriaIcon.resize(iconMaxWidth,iconMaxHeight);
   offscreen.image(UriaIcon, birdX,uriaY);
 
+  // offset because toio's were a little up :D
+  int cont = 60;
   puffinTOIO.homeX = birdX;
-  puffinTOIO.homeY = puffY;
+  puffinTOIO.homeY = puffY + cont;
 
   uriaTOIO.homeX = birdX;
-  uriaTOIO.homeY = uriaY;
+  uriaTOIO.homeY = uriaY + cont -10;
 
   alcaTOIO.homeX = birdX;
-  alcaTOIO.homeY = alcaY;
+  alcaTOIO.homeY = alcaY + cont - 5;
 
-  /*
+ 
   // DETECT WHICH TOIO IS SELECTED
-  if (puffinTOIO is not near home) {
-    maoTOIO = puffinTOIO;
-  } else if (alcaTOIO is not near home) {
-        maoTOIO = alcaTOIO;
-  } else if (uriaTOIO is not near home {
-        maoTOIO = uriaTOIO;
+  if (!isToioNearHome(puffinTOIO)) {
+    print("PUFFINh SELECTED");
+    selectPuffin();
+  } else if (!isToioNearHome(alcaTOIO)) {
+    print("ALCA SELECTED");
+    selectAlca();
+  } else if (!isToioNearHome(uriaTOIO)) {
+     print("URIA SELECTED");
+    selectUria();
   }
-  */
+  
+  if (isToioNearHome(puffinTOIO) && mapTOIO == puffinTOIO) {
+    mapTOIO = null;
+  } else if (isToioNearHome(alcaTOIO) && mapTOIO == alcaTOIO) {
+    mapTOIO = null;
+  } else if (isToioNearHome(uriaTOIO) && mapTOIO == uriaTOIO) {
+    mapTOIO = null;
+  }
+}
 
+boolean isToioNearHome(Cube c) {
+  int tolerance = 30;
+  
+  int p1 = c.x;
+  int q1 = c.y;
+  int p2 = c.homeX;
+  int q2 = c.homeY;
+  int distance = (int) Math.ceil(Math.sqrt((q2 - q1) * (q2 - q1) + (p2 - p1) * (p2 - p1)));
+  print(c.id + " is " + distance + " ; ");
+  return distance <= tolerance;
+}
+
+void runHome(Cube c) {
+  c.target(c.homeX,c.homeY,270);
 }
 void togglePause() {
   // function to either play or pause the automatic timeline toio movement.
@@ -480,6 +512,10 @@ void togglePause() {
 
 void autoplayTimeline() {
    // function to automatically move the timelineTOIO back and forth.
+   //motorTarget(timelineTOIO, mode, 5, 0, 80, 0, x, y, theta);
+   timelineTOIO.target(45,365,90);
+   timelineTOIO.motor(100,100,300);
+   //timelineTOIO.target(45,365,90);
    //timelineTOIO.target(0,2,50,0,95,365,0);
    delay(2000);
    //timelineTOIO.target(0,2,50,0,400,365,0);
